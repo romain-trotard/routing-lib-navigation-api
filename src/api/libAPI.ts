@@ -56,3 +56,9 @@ export async function getLibraryById(id: string) {
     return lib;
 }
 
+export async function addLibrary(library: Library) {
+    await sleep(1000);
+
+    libraries.push(library);
+}
+

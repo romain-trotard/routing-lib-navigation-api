@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useRef } from "react";
-import { NavigateEvent } from "../WindowOverride";
+import { NavigateEvent } from "./WindowOverride";
 
 
 function useEffectEvent(cb: Function) {

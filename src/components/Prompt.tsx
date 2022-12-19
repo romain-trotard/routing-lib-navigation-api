@@ -1,6 +1,7 @@
 import usePrompt from "../lib/usePrompt";
 import Modal from 'react-modal';
 import { useRef, useState } from "react";
+import { Button, Flex, Text } from "@chakra-ui/react";
 
 Modal.setAppElement('#root');
 
@@ -40,15 +41,22 @@ export default function Prompt({
 
     return (
         <Modal isOpen={showModal} onRequestClose={closeModal} style={customStyles}>
-            <p>{message}</p>
-            <button type="button" onClick={() => {
-                promiseResolve.current?.(false)
-                closeModal();
-            }}>Cancel</button>
-            <button type="button" onClick={() => {
-                promiseResolve.current?.(true);
-                closeModal()
-            }}>Confirm</button>
+            <Text fontSize="2xl" fontWeight={600} marginBottom={3}>Are you sure?</Text>
+            <Text fontSize="lg">{message}</Text>
+            <Flex justifyContent="flex-end" gap={2} paddingTop={3}>
+                <Button type="button" variant='outline' onClick={() => {
+                    promiseResolve.current?.(false)
+                    closeModal();
+                }}>
+                    Cancel
+                </Button>
+                <Button type="button" colorScheme="blue" variant='outline' onClick={() => {
+                    promiseResolve.current?.(true);
+                    closeModal()
+                }}>
+                    Confirm
+                </Button>
+            </Flex>
         </Modal>
     );
 }
