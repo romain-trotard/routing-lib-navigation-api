@@ -1,9 +1,5 @@
 import './App.css'
-import Router, { Routes, useLoaderData } from './Router';
-
-function useNavigate(url: string, { replaceMode = false } = {}) {
-    window.navigation.navigate(url, { history: replaceMode ? 'replace' : 'push' });
-}
+import Router, { Routes, useLoaderData } from './lib/Router';
 
 function Home() {
     const loaderData = useLoaderData();
