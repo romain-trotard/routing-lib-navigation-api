@@ -1,5 +1,6 @@
 import './App.css'
 import Router, { Routes, useLoaderData } from './lib/Router';
+import FormPage from './pages/FormPage';
 
 function Home() {
     const loaderData = useLoaderData();
@@ -13,7 +14,7 @@ function Home() {
 
 function First() {
     return <>
-        <p>First</p>
+        <FormPage />
         <a href="/second">Go second page</a>
     </>
 }

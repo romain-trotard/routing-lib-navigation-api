@@ -42,8 +42,10 @@ export interface NavigateEvent extends Event {
     canIntercept: boolean;
     destination: {
         url: string;
+        state: any;
     };
     intercept: (options: { handler: () => void }) => void;
+    info: any;
 }
 
 interface NavigationEventHanldersMap {
