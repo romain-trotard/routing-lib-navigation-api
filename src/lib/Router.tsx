@@ -7,7 +7,7 @@ const LoaderDadaContext = React.createContext(undefined);
 
 const noop = () => undefined;
 
-export const useLoaderData = () => useContext(LoaderDadaContext);
+export const useLoaderData = <T extends any = any,>() => useContext(LoaderDadaContext) as T;
 
 type Route = {
     path: string,
