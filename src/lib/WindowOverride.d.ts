@@ -5,7 +5,7 @@ interface NavigationOptions {
 }
 
 interface NavigationHistoryEntry extends EventTarget {
-    readonly url?: string;
+    readonly url: string;
     readonly key: string;
     readonly id: string;
     readonly index: number;
@@ -55,7 +55,7 @@ interface NavigationEventHanldersMap {
 /** Like History, allows manipulation of the browser session history, that is the pages visited in the tab or frame that the current page is loaded in. */
 interface Navigation extends EventTarget {
     entries(): Array<NavigationHistoryEntry>;
-    readonly currentEntry?: NavigationHistoryEntry;
+    readonly currentEntry: NavigationHistoryEntry;
     updateCurrentEntry(options: NavigationUpdateCurrentEntryOptions): undefined;
     readonly transition?: NavigationTransition;
     readonly canGoBack: boolean;

@@ -1,15 +1,35 @@
-import { Box, Flex, Table, TableContainer, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/react";
+import { Box, Flex, Input, Table, TableContainer, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/react";
+import { useState } from "react";
 import type { Library } from "../api/libAPI";
 import Layout from "../components/Layout";
 import { useLoaderData } from "../lib/Router";
+import useNavigate from "../lib/useNavigate";
 
 export default function ListingPage() {
+    const [search, setSearch] = useState(() => {
+        return (new URL(window.location.href)).searchParams.get('search') ?? ''
+    });
     const { libraries } = useLoaderData<{ libraries: Library[] }>();
+    const navigate = useNavigate();
+
+    const onSearchChange = (value: string) => {
+        setSearch(value);
+        navigate(`/listing?search=${value}`, { replaceMode: true });
+    }
+
+    const filteredLibraries = libraries.filter(({ name }) => {
+        if (search === '') {
+            return true;
+        }
+
+        return name.toLowerCase().includes(search.toLowerCase());
+    });
 
 
     return (
         <Layout>
-            <Flex justifyContent="flex-end" marginBottom={2}>
+            <Flex justifyContent="space-between" marginBottom={2}>
+                <Input placeholder="Search by name" maxW={600} value={search} onChange={e => onSearchChange(e.target.value)} />
                 <Box as="a"
                     paddingX={4}
                     paddingY={2}
@@ -28,7 +48,7 @@ export default function ListingPage() {
                         </Tr>
                     </Thead>
                     <Tbody>
-                        {libraries.map(({ id, name, githubUrl }) => (
+                        {filteredLibraries.map(({ id, name, githubUrl }) => (
                             <Tr key={id}>
                                 <Td>{name}</Td>
                                 <Td>{githubUrl}</Td>
