@@ -3,9 +3,7 @@ import createBrowserRouter, { type RouterState } from './createBrowserRouter';
 
 type RouterType = ReturnType<typeof createBrowserRouter>;
 
-type RouterContextProps = {
-    navigate: RouterType['navigate'];
-}
+type RouterContextProps = Pick<RouterType, 'navigate' | 'registerBlockingRoute'>
 
 const RouterContext = React.createContext<RouterContextProps | null>(null);
 const RouterDataContext = React.createContext<RouterState | null>(null);
@@ -34,8 +32,9 @@ export default function RouterProvider({ router }: { router: RouterType }) {
     const state = useSyncExternalStore(router.subscribe, () => router.state, () => router.state);
 
     const routerContextValue = useMemo(() => ({
-        navigate: router.navigate
-    }), [router.navigate]);
+        navigate: router.navigate,
+        registerBlockingRoute: router.registerBlockingRoute
+    }), [router.navigate, router.registerBlockingRoute]);
 
     return (
         <RouterContext.Provider value={routerContextValue}>

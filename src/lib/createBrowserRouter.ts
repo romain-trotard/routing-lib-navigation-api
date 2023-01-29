@@ -110,6 +110,52 @@ export default function createBrowserRouter({ routes }: { routes: Routes }) {
         window.navigation.navigate(url, { history: replaceMode ? 'replace' : 'push', info });
     }
 
-    return { get state() { return state; }, subscribe, navigate };
+    const registerBlockingRoute = ({
+        shouldPrompt,
+        customPromptBeforeLeaveModal,
+        message = 'Are you sure you want to leave? You will lose unsaved changes'
+    }: {
+        shouldPrompt: () => boolean,
+        customPromptBeforeLeaveModal: () => Promise<boolean>,
+        message?: string
+    }) => {
+        const insideAppListener = async (event: NavigateEvent) => {
+            if (event.canIntercept && shouldPrompt() && !event.info?.forceNavigate) {
+                event.preventDefault();
+                const shouldContinue = await customPromptBeforeLeaveModal();
+
+                if (shouldContinue) {
+                    window.navigation.navigate(event.destination.url, {
+                        history: 'push',
+                        state: event.destination.state,
+                        info: { forceNavigate: true, ...event.info },
+                    });
+                }
+            }
+        }
+
+        window.navigation.addEventListener('navigate', insideAppListener);
+
+        const outsideAppListener = (event: BeforeUnloadEvent) => {
+            if (shouldPrompt()) {
+                event.preventDefault();
+                return event.returnValue = message;
+            }
+        }
+
+        // Add event listener, for:
+        // - reload of page
+        // - going to other origin
+        // - closing tab
+        window.addEventListener('beforeunload', outsideAppListener);
+
+        // Return unregister callback
+        return () => {
+            window.navigation.removeEventListener('navigate', insideAppListener);
+            window.removeEventListener('beforeunload', outsideAppListener);
+        }
+    }
+
+    return { get state() { return state; }, subscribe, navigate, registerBlockingRoute };
 }
 
