@@ -1,5 +1,5 @@
 import Layout from "../components/Layout";
-import { useLoaderData } from "../lib/Router";
+import useLoaderData from "../lib/userLoaderData";
 
 export default function HomePage() {
     const loaderData = useLoaderData();
