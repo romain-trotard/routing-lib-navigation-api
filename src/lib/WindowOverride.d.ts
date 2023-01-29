@@ -46,6 +46,9 @@ export interface NavigateEvent extends Event {
     };
     intercept: (options: { handler: () => void }) => void;
     info: any;
+    hashChange: boolean;
+    downloadRequest: boolean;
+    formData: unknown;
 }
 
 interface NavigationEventHanldersMap {

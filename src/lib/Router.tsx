@@ -17,6 +17,22 @@ type Route = {
 
 export type Routes = Route[];
 
+// Code from https://developer.chrome.com/docs/web-platform/navigation-api/#deciding-how-to-handle-a-navigation
+function shouldNotIntercept(navigationEvent: NavigateEvent) {
+    return (
+        !navigationEvent.canIntercept ||
+        // If this is just a hashChange,
+        // just let the browser handle scrolling to the content.
+        navigationEvent.hashChange ||
+        // If this is a download,
+        // let the browser perform the download.
+        navigationEvent.downloadRequest ||
+        // If this is a form submission,
+        // let that go to the server.
+        navigationEvent.formData
+    );
+}
+
 export default function Router({ routes: userRoutes }: { routes: Routes }) {
     const [loaderData, setLoaderData] = useState(undefined);
     const [currentUrl, setCurrentUrl] = useState<string | undefined>(undefined);
@@ -40,13 +56,15 @@ export default function Router({ routes: userRoutes }: { routes: Routes }) {
         }
 
         const listener = (event: NavigateEvent) => {
-            if (event.canIntercept) {
-                event.intercept({
-                    async handler() {
-                        await processUrl(event.destination.url);
-                    }
-                })
+            if (shouldNotIntercept(event)) {
+                return;
             }
+
+            event.intercept({
+                async handler() {
+                    await processUrl(event.destination.url);
+                }
+            })
         }
 
         // Process the url like calling loaderData at first render
