@@ -31,6 +31,7 @@ export type RouterState = {
     matchingRoute: Route | null;
     loaderData: any;
     initialized: boolean;
+    navigationInProgress: boolean;
 }
 
 type RouterStateSubscriber = (newState: RouterState) => void;
@@ -66,6 +67,7 @@ export default function createBrowserRouter({ routes }: { routes: Routes }) {
         matchingRoute: initialMatchingRoute,
         loaderData: undefined,
         initialized: !initialMatchingRoute?.loader,
+        navigationInProgress: false,
     }
 
     const updateState = (newState: Partial<RouterState>) => {
@@ -83,7 +85,13 @@ export default function createBrowserRouter({ routes }: { routes: Routes }) {
 
         const newMatchingRoute = getMatchingRoute(routes, pathname);
 
-        updateState({ location: pathname, loaderData: data, matchingRoute: newMatchingRoute, initialized: true });
+        updateState({
+            location: pathname,
+            loaderData: data,
+            matchingRoute: newMatchingRoute,
+            initialized: true,
+            navigationInProgress: false,
+        });
     }
 
     const listener = (event: NavigateEvent) => {
@@ -93,6 +101,10 @@ export default function createBrowserRouter({ routes }: { routes: Routes }) {
 
         event.intercept({
             async handler() {
+                updateState({
+                    navigationInProgress: true,
+                })
+
                 await completeNavigation(event.destination.url);
             }
         })
