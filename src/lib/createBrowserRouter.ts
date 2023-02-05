@@ -27,7 +27,10 @@ function shouldNotIntercept(navigationEvent: NavigateEvent) {
 }
 
 export type RouterState = {
-    location: string;
+    // In reality should put the location.
+    // With dynamic parameters, but not handle in this
+    // example of implementation.
+    pathname: string;
     matchingRoute: Route | null;
     loaderData: any;
     initialized: boolean;
@@ -63,7 +66,7 @@ export default function createBrowserRouter({ routes }: { routes: Routes }) {
     }
 
     let state: RouterState = {
-        location: initialPathname,
+        pathname: initialPathname,
         matchingRoute: initialMatchingRoute,
         loaderData: undefined,
         initialized: !initialMatchingRoute?.loader,
@@ -73,20 +76,19 @@ export default function createBrowserRouter({ routes }: { routes: Routes }) {
     const updateState = (newState: Partial<RouterState>) => {
         state = { ...state, ...newState };
 
+        // Notify to all the subscribers of the changes
         subscribers.forEach(subscriber => subscriber(state));
     }
 
     const completeNavigation = async (url: string) => {
         const { pathname } = new URL(url);
 
-        const matchingRoute = routes.find(route => route.path === pathname);
-
-        const data = (await matchingRoute?.loader?.() ?? noop());
-
         const newMatchingRoute = getMatchingRoute(routes, pathname);
 
+        const data = (await newMatchingRoute?.loader?.() ?? noop());
+
         updateState({
-            location: pathname,
+            pathname,
             loaderData: data,
             matchingRoute: newMatchingRoute,
             initialized: true,
@@ -132,16 +134,26 @@ export default function createBrowserRouter({ routes }: { routes: Routes }) {
         message?: string
     }) => {
         const insideAppListener = async (event: NavigateEvent) => {
-            if (event.canIntercept && shouldPrompt() && !event.info?.forceNavigate) {
+            // We do not intercept the navigation if:
+            // - we should not
+            // - if the navigation has already been catched `forceNavigate` in the `info`
+            // - we do not should prompt
+            if (!shouldNotIntercept(event) && !event.info?.forceNavigate && shouldPrompt()) {
                 event.preventDefault();
                 const shouldContinue = await customPromptBeforeLeaveModal();
 
+                // If the user wants to continue the navigation
+                // and consequently loses the form data
+                // let's do this
                 if (shouldContinue) {
-                    window.navigation.navigate(event.destination.url, {
-                        history: 'push',
-                        state: event.destination.state,
-                        info: { forceNavigate: true, ...event.info },
-                    });
+                    window.navigation.navigate(
+                        event.destination.url,
+                        {
+                            history: 'push',
+                            state: event.destination.state,
+                            info: { forceNavigate: true, ...event.info },
+                        }
+                    );
                 }
             }
         }
