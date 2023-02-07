@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useRef } from "react";
 import { useRouterContext } from "./RouterProvider";
-import { NavigateEvent } from "./WindowOverride";
 
 
 function useEffectEvent(cb: Function) {
