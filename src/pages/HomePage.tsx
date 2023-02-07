@@ -2,7 +2,7 @@ import Layout from "../components/Layout";
 import useLoaderData from "../lib/userLoaderData";
 
 export default function HomePage() {
-    const loaderData = useLoaderData();
+    const loaderData = useLoaderData<string>();
 
     return (
         <Layout>
