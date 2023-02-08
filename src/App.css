@@ -3,6 +3,8 @@
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
+  font-size: 18px;
+  line-height: 1.8;
 }
 
 .logo {
@@ -39,3 +41,9 @@
 .read-the-docs {
   color: #888;
 }
+
+.featuresWrapper {
+    display: flex;
+    justify-content: center;
+}
+
